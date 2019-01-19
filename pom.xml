@@ -235,7 +235,6 @@
 									<exclude>org.apache.curator:curator*</exclude>
 									<exclude>org.apache.directory.api:*</exclude>
 									<exclude>org.apache.directory.server:*</exclude>
-									<exclude>org.apache.hadoop:*</exclude>
 									<exclude>org.apache.htrace:htrace-core</exclude>
 									<exclude>org.apache.httpcomponents:*</exclude>
 									<exclude>org.apache.ivy:ivy</exclude>
