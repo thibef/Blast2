@@ -5,12 +5,65 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import java.util.Set;
 import java.util.List;
+import scala.collection.JavaConversions;
+import scala.collection.Seq;
+
 
 public class DatasetReader {
-    public DatasetReader(String d1, String d2, String grnd){
-        read(d1,d2,grnd);
+
+
+    public static Seq<EntityProfile> readDataset(String path) {
+        ArrayList<EntityProfile> read_data=null;
+        Object temp = null;
+
+        try {
+            ObjectInputStream ois = new ObjectInputStream(
+                    new FileInputStream(path));
+            temp = ois.readObject();
+            read_data = (ArrayList<EntityProfile>) (temp);
+        }  catch (IOException e) {
+        e.printStackTrace();
+        }
+        catch (ClassNotFoundException e){
+        e.printStackTrace();
+        }
+        //checkAttr(read_data);
+        return JavaConversions.asScalaBuffer(read_data).toList();
+        //return read_data;
     }
+
+
+    public static void  checkAttr(List<EntityProfile> l){
+        Set<String> attr = new  HashSet();
+
+        //getting attribute names from first entity
+        for(Attribute at : l.get(0).getAttributes()){
+            attr.add(at.getName());
+            System.out.println("attr:"+at.getName());
+        }
+
+
+        for(EntityProfile ep: l){
+            Set<String> attr2 = new  HashSet();
+            Set<String> attr2Val = new  HashSet();
+
+            //getting attribute names from first entity
+            for( Attribute at : ep.getAttributes()){
+                attr2.add(at.getName());
+                attr2Val.add(at.getValue());
+            }
+            if(attr.equals(attr2) == false){
+                System.out.println("ERORR");
+                System.out.println(attr.toString() + " "+ attr2.toString() + " " + attr2Val.toString());
+                System.out.println(ep.getEntityUrl());
+            }
+        }
+
+    }
+
 
     public static List<EntityProfile> read(String d1, String d2, String grnd){
         ArrayList<EntityProfile> read_data;

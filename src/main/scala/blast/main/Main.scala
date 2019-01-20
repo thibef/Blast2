@@ -2,75 +2,56 @@ package blast.main
 
 import org.apache.spark.sql.SparkSession
 import org.apache.jena.riot.Lang
+import org.apache.spark.rdd.RDD
 import org.apache.hadoop.hdfs.DFSClient
 import DataStructures.DatasetReader
+import DataStructures.EntityProfile
+import DataStructures.Attribute
+import blast.AttributeSchema.AttributeProfile
+import blast.AttributeSchema.AttributeMatchInduction
+
+import scala.collection.JavaConverters._
+
+
 
 
 object Main {
   def main(args: Array[String]) {
 
 
-    var ds = new DatasetReader("/media/sf_uniassignments/BLAST/dataset1_dblp","/media/sf_uniassignments/BLAST/dataset1_dblp", "/media/sf_uniassignments/BLAST/groundtruth")
 
 
-  }
-
-  def run(): Unit ={
     //initializing spark
     val spark = SparkSession.builder
       .appName(s"Blast")
       .master("local[*]")
       .getOrCreate()
+    val dataS1Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_dblp")
+    //
+    val dataS1 : RDD[EntityProfile]= spark.sparkContext.parallelize(dataS1Raw)
+    val dataS2Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_acm")
+    val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(dataS2Raw)
 
-    //val inputFilePath = "hdfs://localhost:54310/thiago/page_links_simple.nt"
-    val inputFilePath = "/home/hduser/Downloads/page_links_simple.nt"
 
-    val triplesLines = spark.sparkContext.textFile(inputFilePath)
-
-    triplesLines.take(5).foreach(println)
-
-    println(triplesLines.count())
-    val removedComments = triplesLines.filter(!_.startsWith("#"))
-
-    val triples = removedComments.map(data => TripleUtils.parsTriples(data))
-
-    val mapSubject = triples.map(s => (s.subject, 1))
-
-    mapSubject.take(5).foreach(println)
-
-    val subject_freq = mapSubject.reduceByKey((a, b) => a + b) //(_+_)
-
-    subject_freq.take(5).foreach(println)
-
-    spark.stop()
-  }
-
-}
-
-object TripleUtils {
-
-  def parsTriples(parsData: String): Triples = {
-    val subRAngle = parsData.indexOf('>')
-    val predLAngle = parsData.indexOf('<', subRAngle + 1)
-    val predRAngle = parsData.indexOf('>', predLAngle + 1)
-    var objLAngle = parsData.indexOf('<', predRAngle + 1)
-    var objRAngle = parsData.indexOf('>', objLAngle + 1)
-
-    if (objRAngle == -1) {
-      objLAngle = parsData.indexOf('\"', objRAngle + 1)
-      objRAngle = parsData.indexOf('\"', objLAngle + 1)
+    val AProfileDS1 =  AttributeProfile.calculateProfiles(dataS1)
+    val AProfileDS2 =  AttributeProfile.calculateProfiles(dataS2)
+    /*
+      for ( (attr1name,attr1set) <- AProfileDS1.collect() ) {
+      for ( (attr2name,attr2set) <- AProfileDS2.collect() ) {
+        println(attr1name +" vs " + attr2name + AttributeProfile.similarity(attr1set, attr2set))
+      }
     }
+    */
 
-    val subject = parsData.substring(1, subRAngle)
-    val predicate = parsData.substring(predLAngle + 1, predRAngle)
-    val `object` = parsData.substring(objLAngle + 1, objRAngle)
+    //AttributeMatchInduction(AProfileDS1, AProfileDS2)
+    println("tokens:")
+    AProfileDS1.take(10).foreach(println)
 
-    Triples(subject, predicate, `object`)
   }
 
+
+
+
+
 }
 
-case class Triples(subject: String, predicate: String, `object`: String) {
-
-  def isLangTag(resource: String) = resource.startsWith("@")
-}
