@@ -11,6 +11,9 @@ class AttributeProfile(ds: RDD[EntityProfile]) {
   private val _attribute_tokens: RDD[Tuple2[String, Set[String]]] = _attribute_values.map { case (key, valueList) => (key, AttributeProfile.calculateAttrTokens(valueList)) }
   private val _entropies = calculateAttrEntropies()
 
+  println("attribute names are:" )
+  _attribute_values.collect.foreach(x=> println(x._1))
+
   def getAttributeTokens: RDD[Tuple2[String, Set[String]]] = _attribute_tokens
 
   def getAttributeValues: RDD[Tuple2[String, List[String]]] = _attribute_values
