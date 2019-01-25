@@ -50,16 +50,16 @@ class AttributeMatchInduction() {
 
 
 
-    for( candidate <- candidates ){
-      val attrD1 = candidate._1._1
-      val attrD1Id = attrNameClusterIdDS1(attrD1)
-      val attrD2 = candidate._1._2
-      val attrD2Id = attrNameClusterIdDS1(attrD2)
-
-      val minID = math.min(attrD1Id, attrD2Id)
-
-
-    }
+//    for( candidate <- candidates ){
+//      val attrD1 = candidate._1._1
+//      val attrD1Id = attrNameClusterIdDS1(attrD1)
+//      val attrD2 = candidate._1._2
+//      val attrD2Id = attrNameClusterIdDS1(attrD2)
+//
+//      val minID = math.min(attrD1Id, attrD2Id)
+//
+//
+//    }
 
 
 
