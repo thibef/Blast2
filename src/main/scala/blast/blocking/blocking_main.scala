@@ -2,6 +2,7 @@ package blast.blocking
 
 import blast.AttributeSchema.AttributeProfile
 import DataStructures.EntityProfile
+import DataStructures.Attribute
 
 import scala.collection.mutable.ListBuffer
 class blocking_main(DS1:AttributeProfile,DS2: AttributeProfile) {
@@ -23,6 +24,10 @@ class blocking_main(DS1:AttributeProfile,DS2: AttributeProfile) {
     }
 
     private def create_blocks (tokens: List[Tuple2[String,Set[String]]]): List[Tuple2[String,Set[EntityProfile]]] = {
+      var block_collection = new ListBuffer[Tuple2[String,Set[String]]]
+      //for( ep1 <- DS1.getEntityProfiles)
+        //for(attr_ep1 <- ep1.getAttributes)
+
 
       return null
     }

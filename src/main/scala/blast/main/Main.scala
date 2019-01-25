@@ -9,7 +9,7 @@ import DataStructures.EntityProfile
 import DataStructures.Attribute
 import blast.AttributeSchema.AttributeProfile
 import blast.AttributeSchema.AttributeMatchInduction
-
+import blast.blocking.blocking_main
 import scala.collection.JavaConverters._
 
 
@@ -28,13 +28,13 @@ object Main {
       .getOrCreate()
 
     //loads data into RDDs
-    val dataS1Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_dblp")
+    val dataS1Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset1_dblp")
     val dataS1  : RDD[EntityProfile]= spark.sparkContext.parallelize(dataS1Raw)
-    val dataS2Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_acm")
+    val dataS2Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset2_acm")
     //dataS2Raw.foreach(x => println(x.getEntityUrl))
     val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(dataS2Raw)
 
-
+    println("DS1 size",dataS1.count())
     //Creates AttributeProfile class instances which calculate information regarding attributes
     val AProfileDS1 =  new AttributeProfile(dataS1)
     val AProfileDS2 =  new AttributeProfile(dataS2)
@@ -50,12 +50,18 @@ object Main {
       }
     }
     */
+    println("\n###### Match Induction details:")
     val a = new AttributeMatchInduction(AProfileDS1, AProfileDS2)
     //AttributeMatchInduction(AProfileDS1, AProfileDS2)
+    println("\n\nblocking phase details:")
     println("tokens:")
+    println("DS1 Tokens:")
     AProfileDS1.getAttributeTokens.foreach(println)
+    println("DS2 Tokens:")
     AProfileDS2.getAttributeTokens.foreach(println)
-
+    println("\nentity space tokens:")
+    val blocking = new blocking_main(AProfileDS1,AProfileDS2)
+    blocking.get_combined_tokens().foreach(println)
 
   }
 
