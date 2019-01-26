@@ -26,15 +26,23 @@ object Main {
       .appName(s"Blast")
       .master("local[*]")
       .getOrCreate()
+    //**read dataset with spark, should use the old method first to read the data for the first time
+    val dataS1 :RDD[EntityProfile] = spark.sparkContext.objectFile("/home/parsa/Downloads/write_read_test/dplb")
+    val dataS2 :RDD[EntityProfile] = spark.sparkContext.objectFile("/home/parsa/Downloads/write_read_test/acm")
 
-    //loads data into RDDs
-    val dataS1Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset1_dblp")
-    val dataS1  : RDD[EntityProfile]= spark.sparkContext.parallelize(dataS1Raw)
-    val dataS2Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset2_acm")
-    //dataS2Raw.foreach(x => println(x.getEntityUrl))
-    val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(dataS2Raw)
+    //**load the data for the first time using this, and save in spark file object format (basically a bunch of sequenced files)
+//    val dataS1Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset1_dblp")
+//    val dataS1  : RDD[EntityProfile]= spark.sparkContext.parallelize(dataS1Raw)
+//    val dataS2Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset2_acm")
+//    val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(dataS2Raw)
+    //*****************************************************************************************************
+    // **save the data from above in spark File object format
+//    dataS1.saveAsObjectFile("/home/parsa/Downloads/write_read_test/dplb")
+//    dataS2.saveAsObjectFile("/home/parsa/Downloads/write_read_test/acm")
+    //********************************************************************************************************
+    print("DS1 size:",dataS1.count())
+    println("\tDS2 size:",dataS2.count())
 
-    println("DS1 size",dataS1.count())
     //Creates AttributeProfile class instances which calculate information regarding attributes
     val AProfileDS1 =  new AttributeProfile(dataS1)
     val AProfileDS2 =  new AttributeProfile(dataS2)
