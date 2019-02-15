@@ -14,6 +14,9 @@ class AttributeProfile(ds: RDD[EntityProfile]) {
   private val _entity_profiles = ds
   def getEntityProfiles: RDD[EntityProfile] = return ds
 
+  println("attribute names are:" )
+  _attribute_values.collect.foreach(x=> println(x._1))
+
   def getAttributeTokens: RDD[Tuple2[String, Set[String]]] = _attribute_tokens
 
   def getAttributeValues: RDD[Tuple2[String, List[String]]] = _attribute_values
