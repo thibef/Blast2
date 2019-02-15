@@ -17,10 +17,6 @@ import scala.collection.JavaConverters._
 
 object Main {
   def main(args: Array[String]) {
-
-
-
-
     //initializing spark
     val spark = SparkSession.builder
       .appName(s"Blast")
@@ -28,13 +24,16 @@ object Main {
       .getOrCreate()
 
     //loads data into RDDs
-    val dataS1Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_dblp")
-    val dataS1  : RDD[EntityProfile]= spark.sparkContext.parallelize(dataS1Raw)
-    val dataS2Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_acm")
+    //val dataS1Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_dblp")
+    //val dataS1Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_imdb")
+    val dataS1  : RDD[EntityProfile]= spark.sparkContext.parallelize(DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_imdb"))
+    //val dataS2Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_acm")
+    //val dataS2Raw = DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_dbpedia")
     //dataS2Raw.foreach(x => println(x.getEntityUrl))
-    val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(dataS2Raw)
+    val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_dbpedia"))
 
-
+    println("data loaded")
+    return
     //Creates AttributeProfile class instances which calculate information regarding attributes
     val AProfileDS1 =  new AttributeProfile(dataS1)
     val AProfileDS2 =  new AttributeProfile(dataS2)
@@ -50,11 +49,11 @@ object Main {
       }
     }
     */
-    val a = new AttributeMatchInduction(AProfileDS1, AProfileDS2)
+    //val a = new AttributeMatchInduction(AProfileDS1, AProfileDS2)
     //AttributeMatchInduction(AProfileDS1, AProfileDS2)
     println("tokens:")
-    AProfileDS1.getAttributeTokens.foreach(println)
-    AProfileDS2.getAttributeTokens.foreach(println)
+    //AProfileDS1.getAttributeTokens.foreach(println)
+    //AProfileDS2.getAttributeTokens.foreach(println)
 
 
   }
