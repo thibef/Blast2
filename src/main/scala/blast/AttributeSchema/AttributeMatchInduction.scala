@@ -45,6 +45,7 @@ class AttributeMatchInduction() {
     val attributesDS1 = maxDS1.keySet.toList
     val attributesDS2 = maxDS2.keySet.toList
     //attribute arbitrary unique cluster ids
+
     var clusterIdsDS1 = (1 to attributesDS1.size).toList
     var clusterIdsDS2 = (attributesDS1.size+1 to  attributesDS1.size+attributesDS2.size).toList
     //attribute names and indexes in tuples

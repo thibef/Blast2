@@ -10,6 +10,9 @@ class AttributeProfile(ds: RDD[EntityProfile]) {
   private val _attribute_values: RDD[Tuple2[String, List[String]]] = ds.flatMap(AttributeProfile.calculateAttributeValues).reduceByKey(_ ++ _)
   private val _attribute_tokens: RDD[Tuple2[String, Set[String]]] = _attribute_values.map { case (key, valueList) => (key, AttributeProfile.calculateAttrTokens(valueList)) }
   private val _entropies = calculateAttrEntropies()
+  //parsa
+  private val _entity_profiles = ds
+  def getEntityProfiles: RDD[EntityProfile] = return ds
 
   println("attribute names are:" )
   _attribute_values.collect.foreach(x=> println(x._1))
