@@ -30,15 +30,13 @@ class AttributeMatchInduction() {
     //maximum similarity wrt dataset2
     val maxDS2 = sims.map{case ((_,a),b) => (a, b)}.reduceByKey(math.max(_,_)).collectAsMap()
     print("sim dict ds2:" + maxDS2.toString())
-
     //get candidates within alpha of maximum
     val alpha = 0.9
     val candidatesDS1 : RDD[Tuple2[Tuple2[String,String],Double]] = sims.filter{ case ((ds1at, ds2at), sim) => sim > alpha*maxDS1(ds1at)}
     val candidatesDS2 : RDD[Tuple2[Tuple2[String,String],Double]]= sims.filter{ case ((ds1at, ds2at), sim) => sim > alpha*maxDS2(ds2at)}
-    val candidatesWithSim :Set[Tuple2[Tuple2[String,String],Double]] = (candidatesDS1.collect() ++ candidatesDS2.collect()).toSet
+    val candidatesWithSim :Seq[Tuple2[Tuple2[String,String],Double]] = candidatesDS1.collect() ++ candidatesDS2.collect()
     println("candidate pairs are:")
     candidatesWithSim.foreach(println)
-    println("end  candidates")
     //
 
     //finding connected edges
@@ -52,21 +50,23 @@ class AttributeMatchInduction() {
     var attrNameIndexDS1 = (attributesDS1 zip (0 to attributesDS1.size-1 ).toList).toMap
     var attrNameIndexDS2 = (attributesDS2 zip (0 to attributesDS2.size-1 ).toList).toMap
 
-    //finds connected components in graphs. assigns keys to each connected maximal subgraph.
+    println("before")
+    clusterIdsDS1.foreach(println)
+
     for( candidate <- candidatesWithSim ){
       val attrNameD1 = candidate._1._1
       val attrD1Cluster = clusterIdsDS1(attrNameIndexDS1(attrNameD1))
       val attrNameD2 = candidate._1._2
-      val attrD2Cluster = clusterIdsDS2(attrNameIndexDS2(attrNameD2))
+      val attrD2Cluster = clusterIdsDS1(attrNameIndexDS2(attrNameD2))
 
       val minCluster = math.min(attrD1Cluster, attrD2Cluster)
       //replace every instance of old ideas by minID
-                    // x => if expr retval else retval
-      //clusterIdsDS1 = clusterIdsDS1.map{case attrD1Cluster => minCluster; case x => x}
-      clusterIdsDS1 = clusterIdsDS1.map{x => if (x== attrD1Cluster) minCluster else x}
-      //clusterIdsDS2 = clusterIdsDS2.map{case attrD2Cluster => minCluster; case x => x}
-      clusterIdsDS2 = clusterIdsDS2.map{x => if (x == attrD2Cluster) minCluster else x}
+
+      clusterIdsDS1 = clusterIdsDS1.map{case attrD1Cluster => minCluster; case x => x}
+      clusterIdsDS2 = clusterIdsDS2.map{case attrD2Cluster => minCluster; case x => x}
     }
+    println("after")
+    clusterIdsDS1.foreach(println)
 
 
   }
