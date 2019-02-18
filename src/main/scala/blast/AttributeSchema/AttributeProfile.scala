@@ -14,9 +14,6 @@ class AttributeProfile(ds: RDD[EntityProfile]) {
   private val _entity_profiles = ds
   def getEntityProfiles: RDD[EntityProfile] = return ds
 
-  println("attribute names are:" )
-  _attribute_values.collect.foreach(x=> println(x._1))
-
   def getAttributeTokens: RDD[Tuple2[String, Set[String]]] = _attribute_tokens
 
   def getAttributeValues: RDD[Tuple2[String, List[String]]] = _attribute_values
@@ -44,9 +41,6 @@ object AttributeProfile {
   def flatten_tuples(tup : Tuple2[String, List[String]]) : List[Tuple2[Tuple2[String, String],Int]]= {
     return tup._2.map(x => ((tup._1, x),1))
   }
-
-
-
 
 
   //gets values of all attributes in entity profile

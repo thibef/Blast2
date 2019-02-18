@@ -16,6 +16,11 @@ import scala.collection.JavaConverters._
 
 
 object Main {
+
+  def convertFile(spark : SparkSession, inputP:String, outputP: String): Unit = {
+    val ds:RDD[EntityProfile] = spark.sparkContext.parallelize(DatasetReader.readDataset(inputP))
+    ds.saveAsObjectFile(outputP)
+  }
   def main(args: Array[String]) {
     //initializing spark
     val spark = SparkSession.builder
@@ -23,26 +28,25 @@ object Main {
       .master("local[*]")
       .getOrCreate()
 
-    //**read dataset with spark, should use the old method first to read the data for the first time
-    val dataS1 :RDD[EntityProfile] = spark.sparkContext.objectFile("/home/parsa/Downloads/write_read_test/dplb")
-    val dataS2 :RDD[EntityProfile] = spark.sparkContext.objectFile("/home/parsa/Downloads/write_read_test/acm")
 
-    //**load the data for the first time using this, and save in spark file object format (basically a bunch of sequenced files)
-//    val dataS1Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset1_dblp")
-//    val dataS1  : RDD[EntityProfile]= spark.sparkContext.parallelize(dataS1Raw)
-//    val dataS2Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset2_acm")
-//    val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(dataS2Raw)
+    val ds1path = "/media/sf_uniassignments/BLAST/dataset1_dblp"
+    val ds1pathScala = ds1path.concat("_scala")
+    val ds2path = "/media/sf_uniassignments/BLAST/dataset2_acm"
+    val ds2pathScala = ds2path.concat("_scala")
+
+    //convertFile(spark, ds1path, ds1pathScala)
+    //convertFile(spark, ds2path, ds2pathScala)
     //*****************************************************************************************************
     // **save the data from above in spark File object format
-//    dataS1.saveAsObjectFile("/home/parsa/Downloads/write_read_test/dplb")
-//    dataS2.saveAsObjectFile("/home/parsa/Downloads/write_read_test/acm")
+    //dataS1.saveAsObjectFile(ds1pathScala)
+    //dataS2.saveAsObjectFile(ds2pathScala)
     //********************************************************************************************************
-    print("DS1 size:",dataS1.count())
-    println("\tDS2 size:",dataS2.count())
 
+    //return
+    //**read dataset with spark, should use the old method first to read the data for the first time
+    val dataS1 :RDD[EntityProfile] = spark.sparkContext.objectFile(ds1pathScala)
+    val dataS2 :RDD[EntityProfile] = spark.sparkContext.objectFile(ds2pathScala)
 
-    println("data loaded")
-    return
     //Creates AttributeProfile class instances which calculate information regarding attributes
     val AProfileDS1 =  new AttributeProfile(dataS1)
     val AProfileDS2 =  new AttributeProfile(dataS2)
@@ -51,41 +55,11 @@ object Main {
     AProfileDS1.getAttributeEntropies.collect.foreach(println)
     println("entropies DS2")
     AProfileDS2.getAttributeEntropies.collect.foreach(println)
-    /*
-      for ( (attr1name,attr1set) <- AProfileDS1.collect() ) {
-      for ( (attr2name,attr2set) <- AProfileDS2.collect() ) {
-        println(attr1name +" vs " + attr2name + AttributeProfile.similarity(attr1set, attr2set))
-      }
-    }
-    */
-<<<<<<< HEAD
-    //val a = new AttributeMatchInduction(AProfileDS1, AProfileDS2)
-=======
-    println("\n###### Match Induction details:")
-    val a = new AttributeMatchInduction(AProfileDS1, AProfileDS2)
->>>>>>> master
-    //AttributeMatchInduction(AProfileDS1, AProfileDS2)
-    println("\n\nblocking phase details:")
-    println("tokens:")
-<<<<<<< HEAD
-    //AProfileDS1.getAttributeTokens.foreach(println)
-    //AProfileDS2.getAttributeTokens.foreach(println)
 
-=======
-    println("DS1 Tokens:")
-    AProfileDS1.getAttributeTokens.foreach(println)
-    println("DS2 Tokens:")
-    AProfileDS2.getAttributeTokens.foreach(println)
-    println("\nentity space tokens:")
-    val blocking = new blocking_main(AProfileDS1,AProfileDS2)
-    blocking.get_combined_tokens().foreach(println)
->>>>>>> master
+    val a = new AttributeMatchInduction()
+    println(a.calculate(AProfileDS1, AProfileDS2))
 
   }
-
-
-
-
 
 }
 
