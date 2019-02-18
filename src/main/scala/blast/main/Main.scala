@@ -18,6 +18,11 @@ import scala.collection.JavaConverters._
 
 
 object Main {
+
+  def convertFile(spark : SparkSession, inputP:String, outputP: String): Unit = {
+    val ds:RDD[EntityProfile] = spark.sparkContext.parallelize(DatasetReader.readDataset(inputP))
+    ds.saveAsObjectFile(outputP)
+  }
   def main(args: Array[String]) {
     //initializing spark
     val spark = SparkSession.builder
@@ -25,48 +30,48 @@ object Main {
       .master("local[*]")
       .getOrCreate()
 
-    //**read dataset with spark, should use the old method first to read the data for the first time
-    val dataS1: RDD[EntityProfile] = spark.sparkContext.objectFile("/home/parsa/Downloads/write_read_test/dplb")
-    val dataS2: RDD[EntityProfile] = spark.sparkContext.objectFile("/home/parsa/Downloads/write_read_test/acm")
+    val ds1path = "/media/sf_uniassignments/BLAST/dataset1_dblp"
+    val ds1pathScala = ds1path.concat("_scala")
+    val ds2path = "/media/sf_uniassignments/BLAST/dataset2_acm"
+    val ds2pathScala = ds2path.concat("_scala")
 
-    //**load the data for the first time using this, and save in spark file object format (basically a bunch of sequenced files)
-    //    val dataS1Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset1_dblp")
-    //    val dataS1  : RDD[EntityProfile]= spark.sparkContext.parallelize(dataS1Raw)
-    //    val dataS2Raw = DatasetReader.readDataset("/home/parsa/Downloads/dataset2_acm")
-    //    val dataS2 : RDD[EntityProfile] = spark.sparkContext.parallelize(dataS2Raw)
+    //convertFile(spark, ds1path, ds1pathScala)
+    //convertFile(spark, ds2path, ds2pathScala)
     //*****************************************************************************************************
     // **save the data from above in spark File object format
-    //    dataS1.saveAsObjectFile("/home/parsa/Downloads/write_read_test/dplb")
-    //    dataS2.saveAsObjectFile("/home/parsa/Downloads/write_read_test/acm")
+    //dataS1.saveAsObjectFile(ds1pathScala)
+    //dataS2.saveAsObjectFile(ds2pathScala)
     //********************************************************************************************************
+
+    //return
+    //**read dataset with spark, should use the old method first to read the data for the first time
+    val dataS1 :RDD[EntityProfile] = spark.sparkContext.objectFile(ds1pathScala)
+    val dataS2 :RDD[EntityProfile] = spark.sparkContext.objectFile(ds2pathScala)
+
+    //Creates AttributeProfile class instances which calculate information regarding attributes
+    val AProfileDS1 =  new AttributeProfile(dataS1)
+    val AProfileDS2 =  new AttributeProfile(dataS2)
+
     val size_DS1  = dataS1.count() ; val  size_DS2 = dataS2.count()
 
     println("DS1 size:", size_DS1,"\tDS2 size:", size_DS2)
     println("data loaded")
 
-    //Creates AttributeProfile class instances which calculate information regarding attributes
-    val AProfileDS1 = new AttributeProfile(dataS1.sample(false, 3.0/size_DS1))
-    val AProfileDS2 = new AttributeProfile(dataS2.sample(false, 3.0/size_DS2))
-    println("sizee after cutting" ,AProfileDS1.getEntityProfiles.count(),AProfileDS2.getEntityProfiles.count())
-    /*
     println("entropies DS1")
     AProfileDS1.getAttributeEntropies.collect.foreach(println)
     println("entropies DS2")
     AProfileDS2.getAttributeEntropies.collect.foreach(println)
 
-      for ( (attr1name,attr1set) <- AProfileDS1.collect() ) {
-      for ( (attr2name,attr2set) <- AProfileDS2.collect() ) {
-        println(attr1name +" vs " + attr2name + AttributeProfile.similarity(attr1set, attr2set))
-      }
-    }
-    */
+    val a = new AttributeMatchInduction()
+    println(a.calculate(AProfileDS1, AProfileDS2))
 
-    //val a = new AttributeMatchInduction(AProfileDS1, AProfileDS2)
+    //Creates AttributeProfile class instances which calculate information regarding attributes
+    val AProfileDS1 = new AttributeProfile(dataS1.sample(false, 3.0/size_DS1))
+    val AProfileDS2 = new AttributeProfile(dataS2.sample(false, 3.0/size_DS2))
+    println("sizee after cutting" ,AProfileDS1.getEntityProfiles.count(),AProfileDS2.getEntityProfiles.count())
+    
 
-    //println("\n###### Match Induction details:")
-    //val a = new AttributeMatchInduction(AProfileDS1, AProfileDS2)
-
-    //AttributeMatchInduction(AProfileDS1, AProfileDS2)
+   
     println("\n\nblocking phase details:")
     println("tokens:")
 
@@ -85,9 +90,9 @@ object Main {
 
   }
 
+   
 
-
-
+  }
 
 }
 
