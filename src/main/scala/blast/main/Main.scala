@@ -10,6 +10,8 @@ import DataStructures.Attribute
 import blast.AttributeSchema.AttributeProfile
 import blast.AttributeSchema.AttributeMatchInduction
 import blast.blocking.blocking_main
+import org.spark_project.dmg.pmml.False
+
 import scala.collection.JavaConverters._
 
 
@@ -27,7 +29,6 @@ object Main {
       .appName(s"Blast")
       .master("local[*]")
       .getOrCreate()
-
 
     val ds1path = "/media/sf_uniassignments/BLAST/dataset1_dblp"
     val ds1pathScala = ds1path.concat("_scala")
@@ -51,6 +52,11 @@ object Main {
     val AProfileDS1 =  new AttributeProfile(dataS1)
     val AProfileDS2 =  new AttributeProfile(dataS2)
 
+    val size_DS1  = dataS1.count() ; val  size_DS2 = dataS2.count()
+
+    println("DS1 size:", size_DS1,"\tDS2 size:", size_DS2)
+    println("data loaded")
+
     println("entropies DS1")
     AProfileDS1.getAttributeEntropies.collect.foreach(println)
     println("entropies DS2")
@@ -58,6 +64,33 @@ object Main {
 
     val a = new AttributeMatchInduction()
     println(a.calculate(AProfileDS1, AProfileDS2))
+
+    //Creates AttributeProfile class instances which calculate information regarding attributes
+    val AProfileDS1 = new AttributeProfile(dataS1.sample(false, 3.0/size_DS1))
+    val AProfileDS2 = new AttributeProfile(dataS2.sample(false, 3.0/size_DS2))
+    println("sizee after cutting" ,AProfileDS1.getEntityProfiles.count(),AProfileDS2.getEntityProfiles.count())
+    
+
+   
+    println("\n\nblocking phase details:")
+    println("tokens:")
+
+    //AProfileDS1.getAttributeTokens.foreach(println)
+    //AProfileDS2.getAttributeTokens.foreach(println)
+
+
+    println("DS1 Tokens:")
+    AProfileDS1.getAttributeTokens.foreach(println)
+    println("DS2 Tokens:")
+    AProfileDS2.getAttributeTokens.foreach(println)
+    println("\nentity space tokens:")
+    val blocking = new blocking_main(AProfileDS1, AProfileDS2)
+    blocking.get_common_tokens().foreach(print)
+
+
+  }
+
+   
 
   }
 
