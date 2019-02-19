@@ -10,6 +10,7 @@ import DataStructures.Attribute
 import blast.AttributeSchema.AttributeProfile
 import blast.AttributeSchema.AttributeMatchInduction
 import blast.Blocking.MetaBlocker
+
 import scala.collection.JavaConverters._
 
 
@@ -27,7 +28,6 @@ object Main {
       .appName(s"Blast")
       .master("local[*]")
       .getOrCreate()
-
 
     val ds1path = "/media/sf_uniassignments/BLAST/dataset1_dblp"
     val ds1pathScala = ds1path.concat("_scala")
@@ -51,6 +51,11 @@ object Main {
     val AProfileDS1 =  new AttributeProfile(dataS1)
     val AProfileDS2 =  new AttributeProfile(dataS2)
 
+    val size_DS1  = dataS1.count() ; val  size_DS2 = dataS2.count()
+
+    println("DS1 size:", size_DS1,"\tDS2 size:", size_DS2)
+    println("data loaded")
+
     println("entropies DS1")
     AProfileDS1.getAttributeEntropies.collect.foreach(println)
     println("entropies DS2")
@@ -68,6 +73,7 @@ object Main {
     blocks.take(50).foreach(println)
     println("#blocks :")
     println(blocks.count)
+
   }
 
 }
