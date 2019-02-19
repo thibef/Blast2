@@ -9,8 +9,7 @@ import DataStructures.EntityProfile
 import DataStructures.Attribute
 import blast.AttributeSchema.AttributeProfile
 import blast.AttributeSchema.AttributeMatchInduction
-import blast.blocking.blocking_main
-import org.spark_project.dmg.pmml.False
+import blast.Blocking.MetaBlocker
 
 import scala.collection.JavaConverters._
 
@@ -63,34 +62,17 @@ object Main {
     AProfileDS2.getAttributeEntropies.collect.foreach(println)
 
     val a = new AttributeMatchInduction()
-    println(a.calculate(AProfileDS1, AProfileDS2))
 
-    //Creates AttributeProfile class instances which calculate information regarding attributes
-    val AProfileDS1 = new AttributeProfile(dataS1.sample(false, 3.0/size_DS1))
-    val AProfileDS2 = new AttributeProfile(dataS2.sample(false, 3.0/size_DS2))
-    println("sizee after cutting" ,AProfileDS1.getEntityProfiles.count(),AProfileDS2.getEntityProfiles.count())
-    
-
-   
-    println("\n\nblocking phase details:")
-    println("tokens:")
-
-    //AProfileDS1.getAttributeTokens.foreach(println)
-    //AProfileDS2.getAttributeTokens.foreach(println)
+    val clusters = a.calculate(AProfileDS1, AProfileDS2)
+    println("clusters are:")
+    clusters.foreach(println)
 
 
-    println("DS1 Tokens:")
-    AProfileDS1.getAttributeTokens.foreach(println)
-    println("DS2 Tokens:")
-    AProfileDS2.getAttributeTokens.foreach(println)
-    println("\nentity space tokens:")
-    val blocking = new blocking_main(AProfileDS1, AProfileDS2)
-    blocking.get_common_tokens().foreach(print)
-
-
-  }
-
-   
+    val blocker = new MetaBlocker()
+    val blocks : RDD[Tuple2[Tuple2[String, Int], List[String]]] = blocker.block(AProfileDS1,AProfileDS1, clusters )
+    blocks.take(50).foreach(println)
+    println("#blocks :")
+    println(blocks.count)
 
   }
 

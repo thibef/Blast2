@@ -7,12 +7,14 @@ import math.log
 
 class AttributeProfile(ds: RDD[EntityProfile]) {
   //contains each value in attributes. Important! list not set must show repeated elements
+  //attribute values RDD of (Attribute name, list of values of attribute)
   private val _attribute_values: RDD[Tuple2[String, List[String]]] = ds.flatMap(AttributeProfile.calculateAttributeValues).reduceByKey(_ ++ _)
+  //associate to each attribute a set of its tokens
   private val _attribute_tokens: RDD[Tuple2[String, Set[String]]] = _attribute_values.map { case (key, valueList) => (key, AttributeProfile.calculateAttrTokens(valueList)) }
   private val _entropies = calculateAttrEntropies()
-  //parsa
   private val _entity_profiles = ds
-  def getEntityProfiles: RDD[EntityProfile] = return ds
+
+  def getEntityProfiles : RDD[EntityProfile] = _entity_profiles
 
   def getAttributeTokens: RDD[Tuple2[String, Set[String]]] = _attribute_tokens
 
@@ -22,7 +24,7 @@ class AttributeProfile(ds: RDD[EntityProfile]) {
 
   def calculateAttrEntropies(): RDD[Tuple2[String, Double]] = {
 
-    //gets counts of each value ((attribute name, value), count )
+    //gets counts of each value in each attibute ((attribute name, value), count )
     val attr_val_count = _attribute_values.flatMap(AttributeProfile.flatten_tuples).reduceByKey(_ + _)
 
     //gets total number of values for each attribute
@@ -53,21 +55,6 @@ object AttributeProfile {
 
   }
 
-  /*
-   def calculateProfiles(dataset: RDD[EntityProfile]): RDD[Tuple2[String, Set[String]]] = {
-    //creates RDD[Tuple2[String,Set[String]] Tuples (attribute name, Set of attribute value tokens)
-    return dataset.flatMap(calculateAttrTokens).reduceByKey(_ ++ _)
-  }
-  def processAttribute(attr : Attribute) :Tuple2[String,Set[String]] =  {
-    //takes one attribute object and returns a tuple with attribute name and tokens of its value
-    return (attr.getName(), valTransFunction(attr.getValue()))
-  }
-
-  def calculateAttrTokens(ep: EntityProfile): Seq[Tuple2[String, Set[String]]] = {
-    var attr = ep.getAttributes().asScala.toList
-    return attr.map(processAttribute)
-  }
-  */
 
   def valTransFunction(str: String): Set[String] = {
     return normalizeAttrValue(str).split(" ").toSet
