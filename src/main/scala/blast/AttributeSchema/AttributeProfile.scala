@@ -8,6 +8,7 @@ import math.log
 class AttributeProfile(ds: RDD[EntityProfile]) {
   //contains each value in attributes. Important! list not set must show repeated elements
   //attribute values RDD of (Attribute name, list of values of attribute)
+  val _size = ds.count()
   private val _attribute_values: RDD[Tuple2[String, List[String]]] = ds.flatMap(AttributeProfile.calculateAttributeValues).reduceByKey(_ ++ _)
   //associate to each attribute a set of its tokens
   private val _attribute_tokens: RDD[Tuple2[String, Set[String]]] = _attribute_values.map { case (key, valueList) => (key, AttributeProfile.calculateAttrTokens(valueList)) }

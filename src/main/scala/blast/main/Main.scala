@@ -4,12 +4,11 @@ import org.apache.spark.sql.SparkSession
 import org.apache.jena.riot.Lang
 import org.apache.spark.rdd.RDD
 import org.apache.hadoop.hdfs.DFSClient
-import DataStructures.DatasetReader
-import DataStructures.EntityProfile
-import DataStructures.Attribute
+import DataStructures.{Attribute, DatasetReader, EntityProfile, IdDuplicates}
 import blast.AttributeSchema.AttributeProfile
 import blast.AttributeSchema.AttributeMatchInduction
-import blast.Blocking.MetaBlocker
+import blast.Blocking.Blocker
+import blast.data_processing.read_GroundTruth
 
 import scala.collection.JavaConverters._
 
@@ -34,13 +33,9 @@ object Main {
     val ds2path = "/media/sf_uniassignments/BLAST/dataset2_acm"
     val ds2pathScala = ds2path.concat("_scala")
 
+    // for the first run, uncomment this part to format the files into spark format
     //convertFile(spark, ds1path, ds1pathScala)
     //convertFile(spark, ds2path, ds2pathScala)
-    //*****************************************************************************************************
-    // **save the data from above in spark File object format
-    //dataS1.saveAsObjectFile(ds1pathScala)
-    //dataS2.saveAsObjectFile(ds2pathScala)
-    //********************************************************************************************************
 
     //return
     //**read dataset with spark, should use the old method first to read the data for the first time
@@ -51,15 +46,15 @@ object Main {
     val AProfileDS1 =  new AttributeProfile(dataS1)
     val AProfileDS2 =  new AttributeProfile(dataS2)
 
-    val size_DS1  = dataS1.count() ; val  size_DS2 = dataS2.count()
+//    val size_DS1  = dataS1.count() ; val  size_DS2 = dataS2.count()
 
-    println("DS1 size:", size_DS1,"\tDS2 size:", size_DS2)
+    println("DS1 size:", AProfileDS1._size ,"\tDS2 size:", AProfileDS2._size)
     println("data loaded")
 
-    println("entropies DS1")
-    AProfileDS1.getAttributeEntropies.collect.foreach(println)
-    println("entropies DS2")
-    AProfileDS2.getAttributeEntropies.collect.foreach(println)
+//    println("entropies DS1")
+//    AProfileDS1.getAttributeEntropies.collect.foreach(println)
+//    println("entropies DS2")
+//    AProfileDS2.getAttributeEntropies.collect.foreach(println)
 
     val a = new AttributeMatchInduction()
 
@@ -68,11 +63,21 @@ object Main {
     clusters.foreach(println)
 
 
-    val blocker = new MetaBlocker()
-    val blocks : RDD[Tuple2[Tuple2[String, Int], List[String]]] = blocker.block(AProfileDS1,AProfileDS1, clusters )
-    blocks.take(50).foreach(println)
+    val blocker = new Blocker()
+    val blocks : RDD[Tuple2[Tuple2[String, Int], List[String]]] = blocker.block(AProfileDS1,AProfileDS2, clusters )
+    blocks.take(5).foreach(println)
     println("#blocks :")
     println(blocks.count)
+
+
+    //evaluation stage
+    read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth");
+     val hash_values = read_GroundTruth.get_the_hashValues().asScala
+    println("# duplicate pairs:"+ hash_values.size)
+
+
+
+
 
   }
 
