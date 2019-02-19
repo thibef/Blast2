@@ -6,7 +6,8 @@ import org.apache.spark.rdd.RDD
 import scala.collection.mutable
 
 class AttributeMatchInduction() {
-  //def this(ds1 :RDD[Tuple2[String,Set[String]]], ds2: RDD[Tuple2[String,Set[String]]]) = {
+
+  /* calculates attribute match induction*/
   def calculate(AP1 : AttributeProfile, AP2 : AttributeProfile) :  Seq[Tuple3[Int, List[String], List[String]]] = {
 
 
@@ -17,17 +18,15 @@ class AttributeMatchInduction() {
     val pairsNames  = pairs.map{case (a,b) => (a._1,b._1) }
     val pairsList : Seq[Tuple2[String,String]] = pairsNames.collect()
 
-    //calculates similarities
+    //calculates similarities of pairs
     val sims : RDD[Tuple2[Tuple2[String,String],Double]]= pairs.map{case (a,b) => ((a._1,b._1),AttributeProfile.similarity(a._2,b._2)) }
 
-    //maximum similarity wrt dataset1
+    //maximum similarity for each attribute in dataset 1
     val maxDS1 = sims.map{case ((a,_),b) => (a, b)}.reduceByKey(math.max(_,_)).collectAsMap()
-    //print("sim dict ds1:" + maxDS1.toString())
-    //maximum similarity wrt dataset2
+    //maximum similarity for each attribute in dataset 2
     val maxDS2 = sims.map{case ((_,a),b) => (a, b)}.reduceByKey(math.max(_,_)).collectAsMap()
-    //print("sim dict ds2:" + maxDS2.toString())
 
-    //get candidates within alpha of maximum
+    //get candidates pairs within alpha of maximum
     val alpha = 0.9
     val candidatesDS1 : RDD[Tuple2[Tuple2[String,String],Double]] = sims.filter{ case ((ds1at, ds2at), sim) => sim > alpha*maxDS1(ds1at)}
     val candidatesDS2 : RDD[Tuple2[Tuple2[String,String],Double]]= sims.filter{ case ((ds1at, ds2at), sim) => sim > alpha*maxDS2(ds2at)}
@@ -56,15 +55,11 @@ class AttributeMatchInduction() {
       val attrD2Cluster = clusterIdsDS2(attrNameIndexDS2(attrNameD2))
 
       val minCluster = math.min(attrD1Cluster, attrD2Cluster)
-      //replace every instance of old ideas by minID
-                    // x => if expr retval else retval
-      //clusterIdsDS1 = clusterIdsDS1.map{case attrD1Cluster => minCluster; case x => x}
+      //replace every instance of old cluster ids by minID
       clusterIdsDS1 = clusterIdsDS1.map{x => if (x== attrD1Cluster) minCluster else x}
-      //clusterIdsDS2 = clusterIdsDS2.map{case attrD2Cluster => minCluster; case x => x}
       clusterIdsDS2 = clusterIdsDS2.map{x => if (x == attrD2Cluster) minCluster else x}
 
     }
-
 
     return remapClusters(attributesDS1, attributesDS2, clusterIdsDS1, clusterIdsDS2)
   }

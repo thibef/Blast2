@@ -9,7 +9,7 @@ import DataStructures.EntityProfile
 import DataStructures.Attribute
 import blast.AttributeSchema.AttributeProfile
 import blast.AttributeSchema.AttributeMatchInduction
-import blast.blocking.blocking_main
+import blast.Blocking.MetaBlocker
 import scala.collection.JavaConverters._
 
 
@@ -57,8 +57,17 @@ object Main {
     AProfileDS2.getAttributeEntropies.collect.foreach(println)
 
     val a = new AttributeMatchInduction()
-    println(a.calculate(AProfileDS1, AProfileDS2))
 
+    val clusters = a.calculate(AProfileDS1, AProfileDS2)
+    println("clusters are:")
+    clusters.foreach(println)
+
+
+    val blocker = new MetaBlocker()
+    val blocks : RDD[Tuple2[Tuple2[String, Int], List[String]]] = blocker.block(AProfileDS1,AProfileDS1, clusters )
+    blocks.take(50).foreach(println)
+    println("#blocks :")
+    println(blocks.count)
   }
 
 }
