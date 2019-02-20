@@ -29,9 +29,12 @@ object Main {
       .master("local[*]")
       .getOrCreate()
 
-    val ds1path = "/media/sf_uniassignments/BLAST/dataset1_dblp"
+    val ds1suffix = "imdb"
+    val ds2suffix = "dbpedia"
+
+    val ds1path = "/media/sf_uniassignments/BLAST/dataset1_"+ ds1suffix
     val ds1pathScala = ds1path.concat("_scala")
-    val ds2path = "/media/sf_uniassignments/BLAST/dataset2_acm"
+    val ds2path = "/media/sf_uniassignments/BLAST/dataset2_" + ds2suffix
     val ds2pathScala = ds2path.concat("_scala")
 
     //convertFile(spark, ds1path, ds1pathScala)
