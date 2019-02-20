@@ -8,6 +8,7 @@ import DataStructures.{Attribute, DatasetReader, EntityProfile, IdDuplicates}
 import blast.AttributeSchema.AttributeProfile
 import blast.AttributeSchema.AttributeMatchInduction
 import blast.Blocking.Blocker
+import blast.Blocking.MetaBlocker
 import blast.data_processing.read_GroundTruth
 
 import scala.collection.JavaConverters._
@@ -28,8 +29,8 @@ object Main {
       .master("local[*]")
       .getOrCreate()
 
-    val ds1suffix = "imdb"
-    val ds2suffix = "dbpedia"
+    val ds1suffix = "dblp"
+    val ds2suffix = "acm"
 
     val ds1path = "/media/sf_uniassignments/BLAST/dataset1_"+ ds1suffix
     val ds1pathScala = ds1path.concat("_scala")
@@ -73,11 +74,16 @@ object Main {
     println(blocks.count)
 
 
+    val mBlocker = new MetaBlocker(spark)
+    mBlocker.calculate(blocks, AProfileDS1, AProfileDS2)
+
+    /*
     //evaluation stage
     read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth");
      val hash_values = read_GroundTruth.get_the_hashValues().asScala
     println("# duplicate pairs:"+ hash_values.size)
 
+    */
 
 
 
