@@ -2,15 +2,14 @@ package blast.data_processing;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import DataStructures.IdDuplicates;
-import com.github.andrewoma.dexx.collection.Set;
+
 
 public class read_GroundTruth {
     private static HashSet<IdDuplicates> hashSet;
     public static HashSet<Integer> listofHashValues = new HashSet<Integer>();
-
+    public static HashSet<IdDuplicates> get_the_original_hashset () {return hashSet;}
 
     public static void read_groundData(String path) {
         HashSet<IdDuplicates> duplicates=null ;

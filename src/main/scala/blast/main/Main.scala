@@ -69,10 +69,10 @@ object Main {
 
     val blocker = new Blocker()
     val blocks : RDD[Tuple2[Tuple2[String, Int], List[String]]] = blocker.block(AProfileDS1,AProfileDS2, clusters )
-    blocks.take(5).foreach(println)
     println("#blocks :")
     println(blocks.count)
-
+    println("sample of 5 blocks:")
+    blocks.take(5).foreach(println)
 
     val mBlocker = new MetaBlocker(spark)
     mBlocker.calculate(blocks, AProfileDS1, AProfileDS2)

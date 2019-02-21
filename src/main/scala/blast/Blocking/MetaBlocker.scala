@@ -38,37 +38,39 @@ class MetaBlocker(spark : SparkSession){
 
     //use same algorithms as in match induction to find subgraphs
 
-    val pairs = filteredEdges.collect()
-    //get all entity ids in the pairs
-    val entities = filteredEdges.flatMap{case (a,b) => List(a,b)}.distinct().collect().toList
+//    val pairs = filteredEdges.collect()
 
-    println("collected entitities")
-    println("num entities:")
-    println(entities.size)
-    //generate numeric index for each pair
-    var profileCluster = (0 to entities.size).toArray
-
-    //generate map between id to index profile id
-    val mapId = (entities zip profileCluster).toMap
-    println("genereated map")
-    for( pair <- pairs ){
-      val a_id = pair._1
-      val a_index = mapId.getOrElse(a_id,0) //index in profileCluster
-      val a_cluster = profileCluster(a_index)
-      val b_id = pair._2
-      val b_index = mapId.getOrElse(b_id,0)
-      val b_cluster = profileCluster(b_index)
-
-      //replace every instance losing cluster with winner's
-      if (a_id < b_id) {
-        profileCluster = profileCluster.map { x => if (x == b_cluster ) a_cluster  else x }
-      } else {
-        profileCluster = profileCluster.map { x => if (x == a_cluster ) b_cluster  else x }
-      }
-
-    }
-    println("calculated clusters")
-    profileCluster.toSet.foreach(println)
+//
+//    //get all entity ids in the pairs
+//    val entities = filteredEdges.flatMap{case (a,b) => List(a,b)}.distinct().collect().toList
+//
+//    println("collected entitities")
+//    println("num entities:")
+//    println(entities.size)
+//    //generate numeric index for each pair
+//    var profileCluster = (0 to entities.size).toArray
+//
+//    //generate map between id to index profile id
+//    val mapId = (entities zip profileCluster).toMap
+//    println("genereated map")
+//    for( pair <- pairs ){
+//      val a_id = pair._1
+//      val a_index = mapId.getOrElse(a_id,0) //index in profileCluster
+//      val a_cluster = profileCluster(a_index)
+//      val b_id = pair._2
+//      val b_index = mapId.getOrElse(b_id,0)
+//      val b_cluster = profileCluster(b_index)
+//
+//      //replace every instance losing cluster with winner's
+//      if (a_id < b_id) {
+//        profileCluster = profileCluster.map { x => if (x == b_cluster ) a_cluster  else x }
+//      } else {
+//        profileCluster = profileCluster.map { x => if (x == a_cluster ) b_cluster  else x }
+//      }
+//
+//    }
+//    println("calculated clusters")
+//    profileCluster.toSet.foreach(println)
 
 
   }
