@@ -7,7 +7,7 @@ class MetaBlocker(spark : SparkSession, clusterEntropies : Map[Int, Double]){
 
   private val _spark = spark
   private val PriClusterEntropies = clusterEntropies
-  def calculate(blocks : RDD[Tuple2[Tuple2[String, Int],List[String]]], profileIndex : RDD[Tuple2[String, Set[Tuple2[String,Int]]]] , DS1Attr : AttributeProfile, DS2Attr : AttributeProfile) : RDD[Tuple2[String,String]]{
+  def calculate(blocks : RDD[Tuple2[Tuple2[String, Int],List[String]]], profileIndex : RDD[Tuple2[String, Set[Tuple2[String,Int]]]] , DS1Attr : AttributeProfile, DS2Attr : AttributeProfile) : RDD[Tuple2[String,String]] = {
     //tuples (entity id, entity profile)
     val entityByKeys = DS1Attr.getEntityProfiles.map(x => ("DS1"+x.getEntityUrl, x)) ++ DS2Attr.getEntityProfiles.map(x=> ("DS2"+x.getEntityUrl, x))
 

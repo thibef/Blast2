@@ -75,15 +75,15 @@ object Main {
 
     val clusterEntropies : Map[Int,Double] = a.entropies_from_clusters(AProfileDS1,AProfileDS2,clusters)
     val mBlocker = new MetaBlocker(spark, clusterEntropies)
-    mBlocker.calculate(blocks ,profileIndex, AProfileDS1, AProfileDS2)
+    val candidate_pairs = mBlocker.calculate(blocks ,profileIndex, AProfileDS1, AProfileDS2)
 
 
   //evaluation stage
     // change this to the actual output fro metablocking
-    val candidate_pairs : RDD[Tuple2[String,String]] = RDD(Tuple2(String,String))
+    //val candidate_pairs : RDD[Tuple2[String,String]] = RDD(Tuple2(String,String))
     val eval = new blast.data_processing.evaluation(candidate_pairs)
     val recal_precission : Tuple2[Double,Double] = eval.get_the_stats()
-    println("recall=",recal_precission._1,"\tprecission=",recal_precission._2)
+    println("recall=",recal_precission._1,"\tprecision=",recal_precission._2)
 
 
 
