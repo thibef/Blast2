@@ -12,7 +12,7 @@ class Blocker {
 
     //we want (token, cluster id, list[entity ids]
                                                                   //(attribute name, list(values)
-    val listOfBlocks = DS1.getEntityProfiles.flatMap(entity => Blocker.blockEntity(entity,attrDS1toCluster, "DS1")) ++ DS2.getEntityProfiles.flatMap(entity => Blocker.blockEntity(entity,attrDS1toCluster, "DS2"))
+    val listOfBlocks = DS1.getEntityProfiles.flatMap(entity => Blocker.blockEntity(entity,attrDS1toCluster, "DS1")) ++ DS2.getEntityProfiles.flatMap(entity => Blocker.blockEntity(entity,attrDS2toCluster, "DS2"))
 
     val result_before_purging = listOfBlocks.aggregateByKey(List[String]())(Blocker.addEntityIdToList, (a: List[String], b : List[String]) => a++b)
     //block purging
