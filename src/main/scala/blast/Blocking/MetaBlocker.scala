@@ -111,19 +111,3 @@ class MetaBlocker(spark : SparkSession, clusterEntropies : Map[Int, Double]){
   }
 
 }
-
-object MetaBlocker{
-
-  //todo: fix weight calculation
-  def createEdges(block : Tuple2[Tuple2[String, Int], List[String]] ) : List[Tuple2[String,Tuple2[ String, Int]]] = {
-
-    val pairs = block._2.flatMap(x=>block._2.map(y=> (x,y)) ).filter{case (id1, id2) => id1!=id2}
-
-    return pairs.map{case (id1, id2) => (id1,(id2, 1) ) }
-
-  }
-
-
-
-
-}
