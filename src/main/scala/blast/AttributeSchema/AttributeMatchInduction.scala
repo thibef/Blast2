@@ -65,7 +65,24 @@ class AttributeMatchInduction() {
 
   }
 
+  def entropies_from_clusters(AP1 : AttributeProfile, AP2 : AttributeProfile, list_clusters : Seq[Tuple3[Int, List[String], List[String]]]) : Map[Int, Double] ={
 
+    val DS1Ent = AP1.getAttributeEntropies.collectAsMap()
+    val DS2Ent = AP2.getAttributeEntropies.collectAsMap()
+
+    def calculate_one_cluster(cluster : Tuple3[Int, List[String], List[String]]) : Double = {
+
+      val entropy_attrds1 = cluster._2.map(x => DS1Ent.getOrElse(x,0.0)).sum
+      val entropy_attrds2 = cluster._3.map(x => DS2Ent.getOrElse(x,0.0)).sum
+
+      return ( entropy_attrds1 + entropy_attrds2 )/(cluster._2.size + cluster._3.size).toDouble
+    }
+
+    val entropies : Seq[(Int, Double)]  =  list_clusters.map{ case x => (x._1, calculate_one_cluster(x))}
+
+    return entropies.toMap
+
+  }
 
  def remapClusters(attributesDS1 : Seq[String], attributesDS2 : Seq[String], clusterIdsDS1 : Seq[Int], clusterIdsDS2 : Seq[Int] ) : Seq[Tuple3[Int, List[String], List[String]]]= {
    var clustersCount : Map[Int, Int]= (1 to attributesDS1.size+attributesDS2.size).toList.map{x => (x,0)}.toMap

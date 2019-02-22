@@ -68,22 +68,22 @@ object Main {
 
 
     val blocker = new Blocker()
-    val blocks : RDD[Tuple2[Tuple2[String, Int], List[String]]] = blocker.block(AProfileDS1,AProfileDS2, clusters )
+    val (blocks : RDD[Tuple2[Tuple2[String, Int], List[String]]] , profileIndex : RDD[(String,Set[(String, Int)])]) = blocker.block(AProfileDS1,AProfileDS2, clusters )
     blocks.take(5).foreach(println)
     println("#blocks :")
     println(blocks.count)
 
+    val clusterEntropies : Map[Int,Double] = a.entropies_from_clusters(AProfileDS1,AProfileDS2,clusters)
+    val mBlocker = new MetaBlocker(spark, clusterEntropies)
+    mBlocker.calculate(blocks ,profileIndex, AProfileDS1, AProfileDS2)
 
-    val mBlocker = new MetaBlocker(spark)
-    mBlocker.calculate(blocks, AProfileDS1, AProfileDS2)
 
-    /*
     //evaluation stage
     read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth");
-     val hash_values = read_GroundTruth.get_the_hashValues().asScala
+    val hash_values = read_GroundTruth.get_the_hashValues().asScala
     println("# duplicate pairs:"+ hash_values.size)
 
-    */
+    
 
 
 

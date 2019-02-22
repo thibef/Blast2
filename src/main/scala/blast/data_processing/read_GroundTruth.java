@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.lang.Math;
 import DataStructures.IdDuplicates;
 import com.github.andrewoma.dexx.collection.Set;
 
@@ -13,17 +14,19 @@ public class read_GroundTruth {
 
 
     public static void read_groundData(String path) {
-        HashSet<IdDuplicates> duplicates=null ;
+        HashSet<IdDuplicates> duplicates = null;
         try (ObjectInputStream ois_ground = new ObjectInputStream(new FileInputStream(path))) {
             duplicates = (HashSet<IdDuplicates>) (ois_ground.readObject());
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         hashSet = duplicates;
 
-}
+    }
+
+
+
 
 public static HashSet<Integer> get_the_hashValues(){
         for (IdDuplicates dup : hashSet){
