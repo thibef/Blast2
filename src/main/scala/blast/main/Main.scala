@@ -77,14 +77,12 @@ object Main {
     val mBlocker = new MetaBlocker(spark)
     mBlocker.calculate(blocks, AProfileDS1, AProfileDS2)
 
-    /*
-    //evaluation stage
-    read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth");
-     val hash_values = read_GroundTruth.get_the_hashValues().asScala
-    println("# duplicate pairs:"+ hash_values.size)
-
-    */
-
+  //evaluation stage
+    // change this to the actual output fro metablocking
+    val candidate_pairs : RDD[Tuple2[String,String]] = RDD(Tuple2(String,String))
+    val eval = new blast.data_processing.evaluation(candidate_pairs)
+    val recal_precission : Tuple2[Double,Double] = eval.get_the_stats()
+    println("recall=",recal_precission._1,"\tprecission=",recal_precission._2)
 
 
 
