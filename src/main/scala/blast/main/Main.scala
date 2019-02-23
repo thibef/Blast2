@@ -78,9 +78,13 @@ object Main {
     val candidate_pairs = mBlocker.calculate(blocks ,profileIndex, AProfileDS1, AProfileDS2)
 
   //evaluation stage
+    candidate_pairs.saveAsObjectFile("/media/sf_uniassignments/BLAST/dblp_acm_metablocking")
     val eval = new blast.data_processing.evaluation(candidate_pairs)
     val recal_precission : Tuple2[Double,Double] = eval.get_the_stats()
-    println("recall=",recal_precission._1,"\tprecision=",recal_precission._2)
+    //println("recall=",recal_precission._1,"\tprecision=",recal_precission._2)
+    //rounding to 2 decimal point (percentage)
+    println("Recall: "+(BigDecimal(recal_precission._1).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble)*100+"%")
+    println("Precission: "+(BigDecimal(recal_precission._2).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble)*100+"%")
 
 
 

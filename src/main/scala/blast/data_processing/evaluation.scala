@@ -27,9 +27,9 @@ class evaluation (candidates: RDD[Tuple2[String,String]]) {
       //the ratio of detected dulicates to all executed comparisons. |D| / |B|
       var precission: Double = (count_true / all_comparisons).asInstanceOf[Double]
       println("Evaluation results ######################################")
-      println("all duplicates in groundtruth : ",all_duplicates)
-      println("all comparisons made due to metablocking : ",all_comparisons)
-      println("#of duplicates detected : ",count_true)
+      println("all duplicates in groundtruth : "+all_duplicates.asInstanceOf[Int])
+      println("all comparisons made due to metablocking : "+all_comparisons.asInstanceOf[Int])
+      println("#of duplicates detected : "+count_true.asInstanceOf[Int])
       val result :Tuple2[Double,Double] = Tuple2(recall, precission)
       return result
     }
