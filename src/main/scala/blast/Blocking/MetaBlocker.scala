@@ -14,7 +14,7 @@ class MetaBlocker(spark : SparkSession, clusterEntropies : Map[Int, Double]){
     //generates directed edges from blocks. one edge is added in each direction
     val edges = createEdges2( profileIndex, blocks.count().toInt )
 
-    println("generated edges")
+    println("generating edges")
     println(edges.count())
     println("edges generated")
 
