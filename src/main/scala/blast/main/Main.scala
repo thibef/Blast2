@@ -29,8 +29,12 @@ object Main {
       .master("local[*]")
       .getOrCreate()
 
-    val ds1suffix = "dblp"
-    val ds2suffix = "acm"
+    val ds1suffix = "abt"
+    //dblp
+    val ds2suffix = "buy"
+    //acm
+    val intermediate = "/media/sf_uniassignments/BLAST/"+ds1suffix+"_"+ds2suffix+"_metablocking"
+    //"/media/sf_uniassignments/BLAST/dblp_acm_metablocking"
 
     val ds1path = "/media/sf_uniassignments/BLAST/dataset1_"+ ds1suffix
     val ds1pathScala = ds1path.concat("_scala")
@@ -78,8 +82,8 @@ object Main {
     val candidate_pairs = mBlocker.calculate(blocks ,profileIndex, AProfileDS1, AProfileDS2)
 
   //evaluation stage
-    candidate_pairs.saveAsObjectFile("/media/sf_uniassignments/BLAST/dblp_acm_metablocking")
-    val eval = new blast.data_processing.evaluation(candidate_pairs)
+    candidate_pairs.saveAsObjectFile(intermediate)
+    val eval = new blast.data_processing.evaluation(candidate_pairs,Tuple2(ds1suffix,ds2suffix))
     val recal_precission : Tuple2[Double,Double] = eval.get_the_stats()
     //println("recall=",recal_precission._1,"\tprecision=",recal_precission._2)
     //rounding to 2 decimal point (percentage)

@@ -7,7 +7,7 @@ import scala.collection.mutable
 import collection.JavaConversions._
 
 
-class evaluation (candidates: RDD[Tuple2[String,String]]) {
+class evaluation (candidates: RDD[Tuple2[String,String]], dataset: Tuple2[String,String]) {
 
     var detected_hashvalues: mutable.HashSet[Int] = null
 
@@ -34,19 +34,12 @@ class evaluation (candidates: RDD[Tuple2[String,String]]) {
       return result
     }
 
-    //this hashing is not used. but might be useful in other strategies for evaluation with regards to ground_truth file
-    def cal_hashCode(url1: String, url2: String): Unit = {
-      var hash = 7;
-      //hash = 83 * hash + url1.substring(2,-1);
-      // hash = 83 * hash + this.entityId2;
-      return hash;
-    }
 
     //create a hashset of entity pairs based on the entity URL form the ground_truth file
     def create_urlDuplicates(): mutable.HashSet[url_duplicates] = {
-      val ds1 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_dblp")
-      val ds2 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_acm")
-      val groundtruth = read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth")
+      val ds1 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_"+dataset._1)
+      val ds2 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_"+dataset._2)
+      val groundtruth = read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth_"+dataset._1+"_"+dataset._2)
       // id1 in idduplicates always refer to the first dataset
       var ground_pairs: mutable.HashSet[url_duplicates] = mutable.HashSet[url_duplicates]()
       for (iddup: IdDuplicates <- groundtruth) {
