@@ -44,9 +44,9 @@ class evaluation (candidates: RDD[Tuple2[String,String]]) {
 
     //create a hashset of entity pairs based on the entity URL form the ground_truth file
     def create_urlDuplicates(): mutable.HashSet[url_duplicates] = {
-      val ds1 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_dblp")
-      val ds2 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_acm")
-      val groundtruth = read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth")
+      val ds1 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset1_abt")
+      val ds2 = DataStructures.DatasetReader.readDataset("/media/sf_uniassignments/BLAST/dataset2_buy")
+      val groundtruth = read_GroundTruth.read_groundData("/media/sf_uniassignments/BLAST/groundtruth_buyt")
       // id1 in idduplicates always refer to the first dataset
       var ground_pairs: mutable.HashSet[url_duplicates] = mutable.HashSet[url_duplicates]()
       for (iddup: IdDuplicates <- groundtruth) {
