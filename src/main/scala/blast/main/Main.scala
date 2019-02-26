@@ -10,7 +10,7 @@ import blast.AttributeSchema.AttributeMatchInduction
 import blast.Blocking.Blocker
 import blast.Blocking.MetaBlocker
 import blast.data_processing.read_GroundTruth
-
+import blast.data_processing.evaluation
 import scala.collection.JavaConverters._
 
 
@@ -78,6 +78,7 @@ object Main {
     val dataS1: RDD[EntityProfile] = spark.sparkContext.objectFile(ds1path)
     val dataS2: RDD[EntityProfile] = spark.sparkContext.objectFile(ds2path)
 
+
     //calculate information regarding attributes (entropies and tokens )
     val AProfileDS1 = new AttributeProfile(dataS1)
     val AProfileDS2 = new AttributeProfile(dataS2)
@@ -106,13 +107,21 @@ object Main {
     //candidate edges in the graph that were not pruned
     val candidate_pairs = mBlocker.calculate(blocks, profileIndex, AProfileDS1, AProfileDS2)
 
-    //evaluation stage
-    val eval = new blast.data_processing.evaluation(candidate_pairs)
-    val recal_precission: Tuple2[Double, Double] = eval.get_the_stats()
-    //println("recall=",recal_precission._1,"\tprecision=",recal_precission._2)
-    //rounding to 2 decimal point (percentage)
-    println("Recall: " + (BigDecimal(recal_precission._1).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble) * 100 + "%")
-    println("Precision: " + (BigDecimal(recal_precission._2).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble) * 100 + "%")
+    val groundtruthPath : String = groundtruth.getOrElse("")
+    if(groundtruthPath != ""){
+      //evaluation stage
+      //candidate_pairs.saveAsObjectFile(intermediate)
+
+      val (recall, precision) = evaluation.evaluate(candidate_pairs,groundtruthPath)
+
+      //println("recall=",recal_precission._1,"\tprecision=",recal_precission._2)
+      //rounding to 2 decimal point (percentage)
+      println("Recall: " + (BigDecimal(recall).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble) * 100 + "%")
+      println("Precision: " + (BigDecimal(precision).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble) * 100 + "%")
+    }
+
+
+
 
 
   }
