@@ -29,7 +29,6 @@ object evaluation {
     val num_candidates = candidates_pairs.size
     val all_duplicates = groundtruth_hash.size()
     var hits = 0.0
-    var miss = 0
 
     for (pair <- candidates_pairs) {
       val candDup = new IdDuplicates(parse_index(pair._1), parse_index(pair._2))

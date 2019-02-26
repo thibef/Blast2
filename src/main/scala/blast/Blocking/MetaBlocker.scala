@@ -41,7 +41,7 @@ class MetaBlocker(spark : SparkSession, clusterEntropies : Map[Int, Double]){
       weight >= newT}.map{case (a,(b, weight)) => (a,b)}
     filteredEdges.persist()
     println("pruned graph")
-    filteredEdges.take(10).foreach(println)
+
   return filteredEdges
 
 
