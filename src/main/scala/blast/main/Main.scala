@@ -110,11 +110,15 @@ object Main {
     val groundtruthPath : String = groundtruth.getOrElse("")
     if(groundtruthPath != ""){
       //evaluation stage
-      //candidate_pairs.saveAsObjectFile(intermediate)
+      //save the blocking graph as saprk object
+      val blockingGraphPath = "/media/sf_uniassignments/BLAST/blocking_graphs/"+ds1path.split("/").last.split("_").last+"_"+ds2path.split("/").last.split("_").last
+      if (! new java.io.File(blockingGraphPath).exists()){
+        candidate_pairs.saveAsObjectFile(blockingGraphPath)
+        println("Blocking Graph saved at:\n"+blockingGraphPath)
+      }
 
       val (recall, precision) = evaluation.evaluate(candidate_pairs,groundtruthPath)
 
-      //println("recall=",recal_precission._1,"\tprecision=",recal_precission._2)
       //rounding to 2 decimal point (percentage)
       println("Recall: " + (BigDecimal(recall).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble) * 100 + "%")
       println("Precision: " + (BigDecimal(precision).setScale(4, BigDecimal.RoundingMode.HALF_UP).toDouble) * 100 + "%")
